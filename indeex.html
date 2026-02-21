@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Mission: Vyonne Leveling Up</title>
+
+<style>
+body {
+    margin: 0;
+    background: linear-gradient(135deg, #141e30, #243b55);
+    font-family: 'Courier New', monospace;
+    color: white;
+    overflow: hidden;
+    text-align: center;
+}
+
+#passwordScreen, #gameScreen {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+}
+
+#passwordScreen {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    background: black;
+}
+
+input {
+    padding: 12px;
+    font-size: 16px;
+}
+
+button {
+    padding: 10px 20px;
+    margin-top: 10px;
+    cursor: pointer;
+}
+
+#gameScreen {
+    display: none;
+    padding-top: 40px;
+}
+
+#countdownContainer {
+    display: flex;
+    justify-content: center;
+    gap: 15px;
+    margin-top: 30px;
+}
+
+.timeBox {
+    background: rgba(0,0,0,0.5);
+    padding: 20px;
+    border-radius: 10px;
+    min-width: 70px;
+    box-shadow: 0 0 20px rgba(0,255,255,0.6);
+    animation: pulse 1s infinite;
+}
+
+.timeNumber {
+    font-size: 28px;
+    font-weight: bold;
+}
+
+.label {
+    font-size: 12px;
+    opacity: 0.8;
+}
+
+@keyframes pulse {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.08); }
+    100% { transform: scale(1); }
+}
+
+#sideMissions {
+    margin-top: 30px;
+    font-size: 18px;
+    opacity: 0.9;
+}
+
+#birthdayMessage {
+    display: none;
+    margin-top: 40px;
+    font-size: 22px;
+    animation: glow 1s infinite alternate;
+}
+
+@keyframes glow {
+    from { text-shadow: 0 0 10px #ff00ff; }
+    to { text-shadow: 0 0 25px #00ffff; }
+}
+
+.floating {
+    position: absolute;
+    font-size: 24px;
+    animation: floatUp 6s linear infinite;
+}
+
+@keyframes floatUp {
+    0% { transform: translateY(100vh); opacity: 1; }
+    100% { transform: translateY(-10vh); opacity: 0; }
+}
+</style>
+</head>
+
+<body>
+
+<div id="passwordScreen">
+    <h2>ENTER ACCESS CODE</h2>
+    <input type="password" id="passwordInput" placeholder="Access Code">
+    <button onclick="checkPassword()">START MISSION</button>
+    <p id="error"></p>
+</div>
+
+<div id="gameScreen">
+    <h1>🎮 Mission: Vyonne Leveling Up 🎂</h1>
+
+    <div id="countdownContainer">
+        <div class="timeBox">
+            <div id="days" class="timeNumber">0</div>
+            <div class="label">DAYS</div>
+        </div>
+        <div class="timeBox">
+            <div id="hours" class="timeNumber">0</div>
+            <div class="label">HOURS</div>
+        </div>
+        <div class="timeBox">
+            <div id="minutes" class="timeNumber">0</div>
+            <div class="label">MINUTES</div>
+        </div>
+        <div class="timeBox">
+            <div id="seconds" class="timeNumber">0</div>
+            <div class="label">SECONDS</div>
+        </div>
+    </div>
+
+    <div id="sideMissions"></div>
+    <div id="birthdayMessage"></div>
+</div>
+
+<script>
+const correctPassword = "Vyonne2026";
+
+let year = new Date().getFullYear();
+let birthday = new Date(year, 2, 14);
+if (new Date() > birthday) {
+    birthday = new Date(year + 1, 2, 14);
+}
+
+function checkPassword() {
+    const input = document.getElementById("passwordInput").value;
+    if (input === correctPassword) {
+        document.getElementById("passwordScreen").style.display = "none";
+        document.getElementById("gameScreen").style.display = "block";
+        startCountdown();
+        rotateMissions();
+        spawnFloating();
+    } else {
+        document.getElementById("error").innerText = "ACCESS DENIED";
+    }
+}
+
+function startCountdown() {
+    setInterval(() => {
+        const now = new Date().getTime();
+        const distance = birthday - now;
+
+        if (distance <= 0) {
+            document.getElementById("countdownContainer").style.display = "none";
+            document.getElementById("sideMissions").style.display = "none";
+            document.getElementById("birthdayMessage").style.display = "block";
+            document.getElementById("birthdayMessage").innerHTML =
+                "🎉 LEVEL UNLOCKED: BIRTHDAY MODE 🎉<br><br>" +
+                "Happy Birthday Vyonne 💖<br>" +
+                "You are strong, brilliant, and unstoppable.<br>" +
+                "This year is yours. Dream bigger. Shine louder.<br>" +
+                "Never doubt how powerful you are 🌟";
+            return;
+        }
+
+        document.getElementById("days").innerText = Math.floor(distance / (1000*60*60*24));
+        document.getElementById("hours").innerText = Math.floor((distance / (1000*60*60)) % 24);
+        document.getElementById("minutes").innerText = Math.floor((distance / (1000*60)) % 60);
+        document.getElementById("seconds").innerText = Math.floor((distance / 1000) % 60);
+
+    }, 1000);
+}
+
+const missions = [
+    "Side Quest: Stay Legendary ✨",
+    "Achievement: Confidence +10 🔥",
+    "Bonus XP: Smile Today 💫",
+    "Mission Update: Ignore Negativity 🚫",
+    "Power Boost: Energy +20 ⚡"
+];
+
+function rotateMissions() {
+    setInterval(() => {
+        const randomMission = missions[Math.floor(Math.random() * missions.length)];
+        document.getElementById("sideMissions").innerHTML = randomMission;
+    }, 3000);
+}
+
+function spawnFloating() {
+    setInterval(() => {
+        const span = document.createElement("span");
+        span.classList.add("floating");
+        span.style.left = Math.random() * 100 + "vw";
+        span.innerHTML = "✨";
+        document.body.appendChild(span);
+        setTimeout(() => span.remove(), 6000);
+    }, 800);
+}
+</script>
+
+</body>
+</html>
